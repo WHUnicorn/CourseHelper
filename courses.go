@@ -8,6 +8,7 @@ import (
 	"testCourse/utils"
 )
 
+// 变量名为拼音，某大学教务系统（我不说是谁）背锅！
 type resultSet struct {
 	CurrentPage   int  `json:"currentPage"`
 	CurrentResult int  `json:"currentResult"`

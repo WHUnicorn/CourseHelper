@@ -3,6 +3,7 @@ package main
 import (
 	"testCourse/conf"
 	"testCourse/utils"
+	"testCourse/web"
 )
 
 var plan *Node
@@ -63,5 +64,6 @@ func main() {
 	utils.Warning("以上共计 ", sumAll, " 学分", " required: ", plan.ChildrenNode[2].DemandScore)
 
 	//utils.Error(courseMap)
+	web.Test()
 
 }
