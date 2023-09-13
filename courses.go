@@ -113,7 +113,8 @@ func getPersonalCourses(cookie string) (res []PersonalCourse) {
 	var reply resultSet
 	err = json.Unmarshal(responseBody, &reply)
 	if err != nil {
-		utils.Error(err)
+		utils.Warning(err)
+		utils.Error("cookie 已失效，请重新获取！")
 		return nil
 	}
 
