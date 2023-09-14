@@ -1,3 +1,1 @@
-logLevel: "debug"
 cookie: # 填写您从浏览器获取的 cookie
-datafilePath: "./data/cs.yaml"
