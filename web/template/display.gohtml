@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程可视化~</title>
+</head>
+<body>
+<div>
+    <h2><a href="/">总览</a></h2>
+    <div>
+        {{range .displayNames}}
+            <a href="/{{.}}">{{.}}</a>
+        {{end}}
+    </div>
+    <h3>{{.displayName}}
+        <button>查看</button>
+    </h3>
+    <div>已选: 「 {{.curCredit}} 」 学分
+        {{range .selectedCourses}}
+            <ul>{{.}}</ul>
+        {{end}}
+    </div>
+    <div>以上共 {{.curCredit}} 学分 => 毕业需要 {{.totalCredit}} 学分</div>
+    <br>
+    <div>未选: 「 {{.anotherCredit}} 」 学分
+        {{range .unselectedCourses}}
+            <ul>{{.}}</ul>
+        {{end}}
+    </div>
+</div>
+</body>
+
+</html>
