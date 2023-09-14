@@ -7,8 +7,12 @@ import (
 
 func Test() {
 	router := gin.Default()
+	router.Static("/static", "./static")
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello World")
 	})
-	router.Run(":8000")
+	err := router.Run(":8000")
+	if err != nil {
+		return
+	}
 }
