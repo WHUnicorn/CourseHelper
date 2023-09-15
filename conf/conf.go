@@ -4,15 +4,44 @@ import (
 	"encoding/json"
 	"github.com/spf13/viper"
 	"log"
+	"reflect"
 )
 
 var Config = struct {
 	LogLevel     string `yaml:"logLevel,omitempty"`
 	Cookie       string `yaml:"cookie,omitempty"`
 	DatafilePath string `yaml:"datafilePath"`
+	Port         string `yaml:"port"`
+	Test         struct {
+		AA string `yaml:"aa"`
+	} `yaml:"test"`
 }{
 	LogLevel:     "debug",
-	DatafilePath: "./data/default.yaml",
+	DatafilePath: "./trainingPlans/cs.course",
+	Port:         "12345",
+}
+
+// Elem()用于获取指针指向的值，如果不是接口或指针会panics
+// Addr()用于获得值的指针
+func setConf(value reflect.Value, lastFields ...string) {
+	for i := 0; i < value.Elem().NumField(); i++ {
+		field := value.Elem().Field(i)
+		if field.Kind() == reflect.String {
+			resKey := ""
+			for _, lastField := range lastFields {
+				resKey += lastField + "."
+			}
+			resKey += value.Type().Elem().Field(i).Name
+			if tempParam := viper.GetString(resKey); tempParam != "" {
+				field.Set(reflect.ValueOf(tempParam))
+			}
+		} else {
+			// 回溯 (前进 => 处理 => 回退)
+			lastFields = append(lastFields, value.Elem().Type().Field(i).Name)
+			setConf(field.Addr(), lastFields...)
+			lastFields = lastFields[:len(lastFields)-1]
+		}
+	}
 }
 
 func init() {
@@ -24,9 +53,7 @@ func init() {
 		return // 自动退出
 	}
 
-	Config.LogLevel = viper.GetString("logLevel")
-	Config.Cookie = viper.GetString("cookie")
-	Config.DatafilePath = viper.GetString("datafilePath")
+	setConf(reflect.ValueOf(&Config))
 
 	if Config.Cookie == "" {
 		configStr, _ := json.Marshal(Config)

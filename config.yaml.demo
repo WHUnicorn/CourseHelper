@@ -1,1 +1,6 @@
+## 井号开头的是注释，下面几个是默认值，有需要可以自己改，一般只填 cookie 就行
+# logLevel: "debug"
+# datafilePath: "./trainingPlans/cs.course"
+# port: "12345"
+
 cookie: # 填写您从浏览器获取的 cookie

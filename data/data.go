@@ -10,7 +10,7 @@ var Plan *Node
 var MyCourses []PersonalCourse
 
 func init() {
-	Plan = ReadTrainingPlan("./trainingPlans/cs.yaml")
+	Plan = ReadTrainingPlan(conf.Config.DatafilePath)
 	MyCourses = getPersonalCourses(conf.Config.Cookie)
 }
 

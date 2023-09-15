@@ -69,6 +69,10 @@ func ReadTrainingPlan(filePath string) *Node {
 		if len(line) == 0 {
 			continue
 		}
+		if temp := trimAll(line); len(temp) > 0 && temp[0] == '#' {
+			// 注释
+			continue
+		}
 		depth, ok := countNodeDepth(line)
 		// 叶子
 		if ok {
