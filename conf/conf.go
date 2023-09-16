@@ -51,7 +51,7 @@ func init() {
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./")
 	if err := viper.ReadInConfig(); err != nil {
-		log.Fatal("Error reading config file:", err)
+		log.Fatal("请您添加配置文件（将 config.yaml.demo 重命名为 config.yaml 并补充 cookie 字段）")
 		return // 自动退出
 	}
 
