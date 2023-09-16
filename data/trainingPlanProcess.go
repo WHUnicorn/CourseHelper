@@ -105,7 +105,7 @@ func ReadTrainingPlan(filePath string) *Node {
 					}
 				}
 				for i := len(courseInfo) - 1; i >= 0; i-- {
-					isMatch, err := regexp.MatchString("[0-9]+(-[0-9])?", courseInfo[i])
+					isMatch, err := regexp.MatchString("[0-9?]+(-[0-9?])?", courseInfo[i])
 					if err != nil {
 						utils.Error(err)
 					}
