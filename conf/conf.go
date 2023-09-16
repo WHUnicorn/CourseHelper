@@ -12,6 +12,7 @@ var Config = struct {
 	Cookie       string `yaml:"cookie,omitempty"`
 	DatafilePath string `yaml:"datafilePath"`
 	Port         string `yaml:"port"`
+	IsUnix       string `yaml:"isUnix"`
 	Test         struct {
 		AA string `yaml:"aa"`
 	} `yaml:"test"`
@@ -19,6 +20,7 @@ var Config = struct {
 	LogLevel:     "debug",
 	DatafilePath: "./trainingPlans/cs.course",
 	Port:         "12345",
+	IsUnix:       "true",
 }
 
 // Elem()用于获取指针指向的值，如果不是接口或指针会panics

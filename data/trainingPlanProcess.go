@@ -49,7 +49,7 @@ func trimAll(str string) string {
 func ReadTrainingPlan(filePath string) *Node {
 	data, err := os.Open(filePath)
 	if err != nil {
-		utils.Error("Error opening file:", err)
+		utils.Error("打开培养方案文件出错: ", err)
 		return nil
 	}
 	defer func(data *os.File) {
