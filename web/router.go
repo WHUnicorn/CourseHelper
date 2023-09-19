@@ -9,8 +9,8 @@ import (
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
-	router.LoadHTMLGlob("web/template/*")
-	router.Static("/static", "./static")
+	router.LoadHTMLGlob("resources/template/*")
+	router.Static("/resources/static", "./resources/static")
 	router.GET("/aa", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello World!")
 	})
@@ -23,6 +23,11 @@ func SetupRouter() *gin.Engine {
 	// 定义根节点为专业课
 	rootNode := data.Plan.ChildrenNode[2]
 	//maxDepth := data.MaxDepth - 1
+
+	info := ""
+	if data.MyCourses.IsOutOfDate {
+		info = "您的cookie已过期，当前数据为上次的缓存，如您选课情况有变，请更新cookie"
+	}
 
 	// 第一级路由
 	router.GET("/", func(context *gin.Context) {
@@ -41,6 +46,7 @@ func SetupRouter() *gin.Engine {
 
 		context.HTML(http.StatusOK, "display.gohtml", gin.H{
 			"lastPath":          "/",
+			"info":              info,
 			"displayNames":      childDisplayNames, // 下属节点
 			"displayName":       rootDisplayTable.DisplayName,
 			"selectedCourses":   rootDisplayTable.SelectedCourses,
@@ -73,6 +79,7 @@ func SetupRouter() *gin.Engine {
 
 		context.HTML(http.StatusOK, "display.gohtml", gin.H{
 			"lastPath":          "/",
+			"info":              info,
 			"displayNames":      childDisplayNames,
 			"displayName":       curDisplayTable.DisplayName,
 			"selectedCourses":   curDisplayTable.SelectedCourses,
@@ -104,6 +111,7 @@ func SetupRouter() *gin.Engine {
 
 		context.HTML(http.StatusOK, "display.gohtml", gin.H{
 			"lastPath":          "/" + table1,
+			"info":              info,
 			"displayNames":      childDisplayNames,
 			"displayName":       curDisplayTable.DisplayName,
 			"selectedCourses":   curDisplayTable.SelectedCourses,
@@ -139,6 +147,7 @@ func SetupRouter() *gin.Engine {
 
 		context.HTML(http.StatusOK, "display.gohtml", gin.H{
 			"lastPath":          "/" + table1 + "/" + table2,
+			"info":              info,
 			"displayNames":      childDisplayNames,
 			"displayName":       curDisplayTable.DisplayName,
 			"selectedCourses":   curDisplayTable.SelectedCourses,

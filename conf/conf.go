@@ -18,7 +18,7 @@ var Config = struct {
 	} `yaml:"test"`
 }{
 	LogLevel:     "debug",
-	DatafilePath: "./trainingPlans/cs.course",
+	DatafilePath: "./resources/trainingPlans/cs.course",
 	Port:         "12345",
 	IsUnix:       "true",
 }

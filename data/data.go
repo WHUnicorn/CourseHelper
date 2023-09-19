@@ -1,18 +1,45 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"testCourse/conf"
 	"testCourse/utils"
+	"time"
 )
 
 var Plan *Node
 var MaxDepth int
-var MyCourses []PersonalCourse
+var MyCourses PersonalCourses
 
 func init() {
 	Plan, MaxDepth = ReadTrainingPlan(conf.Config.DatafilePath)
-	MyCourses = getPersonalCourses(conf.Config.Cookie)
+	MyCourses.Courses = getPersonalCourses(conf.Config.Cookie)
+	filePath := "./resources/myCourse.json"
+	if MyCourses.Courses != nil {
+		MyCourses.Date = time.Now()
+		MyCourses.IsOutOfDate = false
+		// 获取数据，更新文件
+		writeToFile(&MyCourses, filePath)
+		return
+	}
+
+	// cookie 失效，未获取数据，尝试读文件
+	bytes, err := os.ReadFile(filePath)
+	if err != nil {
+		utils.Error("cookie 已失效且本地无缓存，请重新获取 cookie...")
+		return
+	}
+
+	// 读文件并解析
+	err = json.Unmarshal(bytes, &MyCourses)
+	if err != nil {
+		utils.Error("解析本地文件失败，请删除该文件！")
+		return
+	}
+	MyCourses.IsOutOfDate = true // 标记为过时
+
 }
 
 func validLearnt(arr *[]PersonalCourse, elem Course) bool {
@@ -57,8 +84,8 @@ func GetValidCourse(node Node) (res DisplayTable) {
 	sumA := 0.0
 	sumB := 0.0
 	for _, course := range courses {
-		myCourses := make([]PersonalCourse, len(MyCourses))
-		copy(myCourses, MyCourses)
+		myCourses := make([]PersonalCourse, len(MyCourses.Courses))
+		copy(myCourses, MyCourses.Courses)
 		if validLearnt(&myCourses, course) {
 			resA = append(resA, "第 "+course.Semester+" 学期: "+course.Name+" "+fmt.Sprint(course.Credit))
 			sumA += course.Credit
@@ -73,7 +100,7 @@ func GetValidCourse(node Node) (res DisplayTable) {
 	res.UnselectedCourses = resB
 	res.DemandTotalScore = fmt.Sprint(node.DemandScore)
 	res.CurCredit = fmt.Sprint(sumA)
-	res.AnotherCredit = fmt.Sprint(sumB)
+	res.AnotherCredit = fmt.Sprint(node.DemandScore - sumA)
 	return
 }
 
@@ -89,5 +116,14 @@ func GetNodeCourse(node Node, courses *[]Course) {
 	}
 	for _, n := range node.ChildrenNode {
 		GetNodeCourse(n, courses)
+	}
+}
+
+func writeToFile(obj interface{}, filePath string) {
+	myCoursesJson, _ := json.Marshal(obj)
+	err := os.WriteFile(filePath, myCoursesJson, 0666)
+	if err != nil {
+		utils.Error(err)
+		return
 	}
 }

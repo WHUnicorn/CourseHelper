@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"testCourse/utils"
+	"time"
 )
 
 // 变量名为拼音，某大学教务系统（我不说是谁）背锅！
@@ -75,6 +76,11 @@ type resultSet struct {
 	TotalPage   int           `json:"totalPage"`
 	TotalResult int           `json:"totalResult"`
 }
+type PersonalCourses struct {
+	Date        time.Time        `json:"date"`
+	Courses     []PersonalCourse `json:"courses"`
+	IsOutOfDate bool             `json:"isOutOfDate"`
+}
 
 type PersonalCourse struct {
 	CourseIdentifier string `json:"courseIdentifier"`
@@ -115,7 +121,7 @@ func getPersonalCourses(cookie string) (res []PersonalCourse) {
 	err = json.Unmarshal(responseBody, &reply)
 	if err != nil {
 		utils.Warning(err)
-		utils.Error("cookie 已失效，请重新获取！")
+		utils.Warning("cookie 已失效，准备尝试读取本地缓存...")
 		return nil
 	}
 
