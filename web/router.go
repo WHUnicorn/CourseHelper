@@ -26,7 +26,7 @@ func SetupRouter() *gin.Engine {
 
 	info := ""
 	if data.MyCourses.IsOutOfDate {
-		info = "您的cookie已过期，当前数据为上次的缓存，如您选课情况有变，请更新cookie"
+		info = "您的cookie已过期，当前数据为上次 (" + data.MyCourses.Date.Format("2006/01/02--15:01") + ") 的缓存，如您选课情况有变，请更新cookie"
 	}
 
 	// 第一级路由
