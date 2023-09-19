@@ -7,4 +7,4 @@
 # datafilePath: "./trainingPlans/cs.course" # 这个是计科（默认）
 # datafilePath: "./trainingPlans/software_engineering.course" # 这个是软工，取消注释即可
 
-cookie: # 填写您从浏览器获取的 cookie
+cookie: # 填写您从浏览器获取的 cookie，注意，需要在最后追加 JSESSIONID字段和值，从请求头获取即可

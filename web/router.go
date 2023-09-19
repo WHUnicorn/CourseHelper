@@ -20,21 +20,28 @@ func SetupRouter() *gin.Engine {
 		})
 	})
 
-	node := data.Plan.ChildrenNode[2]
+	// 定义根节点为专业课
+	rootNode := data.Plan.ChildrenNode[2]
+	//maxDepth := data.MaxDepth - 1
 
-	displayTable := make([]data.DisplayTable, 0)
-
-	displayNames := make([]string, 0)
-	for _, n := range node.ChildrenNode {
-		// 变量必须始终存在，才能解析到页面上，页面会随着变量的变化而变化
-		displayTable = append(displayTable, data.GetValidCourse(n))
-		displayNames = append(displayNames, n.DisplayName)
-	}
-
-	rootDisplayTable := data.GetValidCourse(node)
+	// 第一级路由
 	router.GET("/", func(context *gin.Context) {
+		rootDisplayTable := data.GetValidCourse(rootNode)
+		// 遍历子节点并获取信息
+		//displayTable := make([]data.DisplayTable, 0)
+		childDisplayNames := make([]string, 0)
+		if rootNode.ChildrenNode != nil {
+			for _, n := range rootNode.ChildrenNode {
+				// 变量必须始终存在，才能解析到页面上，页面会随着变量的变化而变化
+				//displayTable = append(displayTable, data.GetValidCourse(n))
+				childDisplayNames = append(childDisplayNames, n.DisplayName)
+			}
+		}
+		//utils.Debug(data.GetSubNode(rootNode, "专业必修课程", "本专业必修课程"))
+
 		context.HTML(http.StatusOK, "display.gohtml", gin.H{
-			"displayNames":      displayNames,
+			"lastPath":          "/",
+			"displayNames":      childDisplayNames, // 下属节点
 			"displayName":       rootDisplayTable.DisplayName,
 			"selectedCourses":   rootDisplayTable.SelectedCourses,
 			"curCredit":         rootDisplayTable.CurCredit,
@@ -44,23 +51,121 @@ func SetupRouter() *gin.Engine {
 		})
 	})
 
-	router.GET("/:table", func(context *gin.Context) {
-		param := context.Param("table")
-		for _, e := range displayTable {
-			if e.DisplayName == param {
-				context.HTML(http.StatusOK, "display.gohtml", gin.H{
-					"displayNames":      displayNames,
-					"displayName":       e.DisplayName,
-					"selectedCourses":   e.SelectedCourses,
-					"curCredit":         e.CurCredit,
-					"totalCredit":       e.DemandTotalScore,
-					"anotherCredit":     e.AnotherCredit,
-					"unselectedCourses": e.UnselectedCourses,
-				})
+	// 第二级路由
+	if rootNode.ChildrenNode == nil || len(rootNode.ChildrenNode) == 0 {
+		return router
+	}
+	router.GET("/:table1", func(context *gin.Context) {
+		table1 := context.Param("table1")
+		curNode := data.GetSubNode(rootNode, table1)
+		if curNode == nil {
+			context.String(404, "NotFound!")
+			return
+		}
+		curDisplayTable := data.GetValidCourse(*curNode)
+		// 遍历子节点并获取名字
+		childDisplayNames := make([]string, 0)
+		if curNode.ChildrenNode != nil {
+			for _, n := range curNode.ChildrenNode {
+				childDisplayNames = append(childDisplayNames, table1+"/"+n.DisplayName)
 			}
 		}
 
+		context.HTML(http.StatusOK, "display.gohtml", gin.H{
+			"lastPath":          "/",
+			"displayNames":      childDisplayNames,
+			"displayName":       curDisplayTable.DisplayName,
+			"selectedCourses":   curDisplayTable.SelectedCourses,
+			"curCredit":         curDisplayTable.CurCredit,
+			"totalCredit":       curDisplayTable.DemandTotalScore,
+			"anotherCredit":     curDisplayTable.AnotherCredit,
+			"unselectedCourses": curDisplayTable.UnselectedCourses,
+		})
 	})
+
+	// 第三组路由
+	router.GET("/:table1/:table2", func(context *gin.Context) {
+		table1 := context.Param("table1")
+		table2 := context.Param("table2")
+
+		curNode := data.GetSubNode(*data.GetSubNode(rootNode, table1), table2)
+		if curNode == nil {
+			context.String(404, "NotFound!")
+			return
+		}
+		curDisplayTable := data.GetValidCourse(*curNode)
+		// 遍历子节点并获取名字
+		childDisplayNames := make([]string, 0)
+		if curNode.ChildrenNode != nil {
+			for _, n := range curNode.ChildrenNode {
+				childDisplayNames = append(childDisplayNames, table1+"/"+table2+"/"+n.DisplayName)
+			}
+		}
+
+		context.HTML(http.StatusOK, "display.gohtml", gin.H{
+			"lastPath":          "/" + table1,
+			"displayNames":      childDisplayNames,
+			"displayName":       curDisplayTable.DisplayName,
+			"selectedCourses":   curDisplayTable.SelectedCourses,
+			"curCredit":         curDisplayTable.CurCredit,
+			"totalCredit":       curDisplayTable.DemandTotalScore,
+			"anotherCredit":     curDisplayTable.AnotherCredit,
+			"unselectedCourses": curDisplayTable.UnselectedCourses,
+		})
+
+	})
+
+	router.GET("/:table1/:table2/:table3", func(context *gin.Context) {
+		table1 := context.Param("table1")
+		table2 := context.Param("table2")
+		table3 := context.Param("table3")
+
+		curNode := data.GetSubNode(*data.GetSubNode(
+			*data.GetSubNode(rootNode, table1), table2),
+			table3)
+		if curNode == nil {
+			context.String(404, "NotFound!")
+			return
+		}
+		curDisplayTable := data.GetValidCourse(*curNode)
+		// 遍历子节点并获取名字
+		childDisplayNames := make([]string, 0)
+		if curNode.ChildrenNode != nil {
+			for _, n := range curNode.ChildrenNode {
+				childDisplayNames = append(childDisplayNames,
+					table1+"/"+table2+"/"+table3+"/"+n.DisplayName)
+			}
+		}
+
+		context.HTML(http.StatusOK, "display.gohtml", gin.H{
+			"lastPath":          "/" + table1 + "/" + table2,
+			"displayNames":      childDisplayNames,
+			"displayName":       curDisplayTable.DisplayName,
+			"selectedCourses":   curDisplayTable.SelectedCourses,
+			"curCredit":         curDisplayTable.CurCredit,
+			"totalCredit":       curDisplayTable.DemandTotalScore,
+			"anotherCredit":     curDisplayTable.AnotherCredit,
+			"unselectedCourses": curDisplayTable.UnselectedCourses,
+		})
+	})
+
+	//router.GET("/:table/:table2", func(context *gin.Context) {
+	//	param := context.Param("table")
+	//	for _, e := range displayTable {
+	//		if e.DisplayName == param {
+	//			context.HTML(http.StatusOK, "display.gohtml", gin.H{
+	//				"displayNames":      displayNames,
+	//				"displayName":       e.DisplayName,
+	//				"selectedCourses":   e.SelectedCourses,
+	//				"curCredit":         e.CurCredit,
+	//				"totalCredit":       e.DemandTotalScore,
+	//				"anotherCredit":     e.AnotherCredit,
+	//				"unselectedCourses": e.UnselectedCourses,
+	//			})
+	//		}
+	//	}
+	//
+	//})
 
 	return router
 }

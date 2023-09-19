@@ -9,14 +9,16 @@
 <body>
 <div>
     <h2><a href="/">总览</a></h2>
+    <h3>{{.displayName}} 的子标签👇</h3>
     <div>
+        <a href="{{.lastPath}}">返回上一级</a>
+        <br>
         {{range .displayNames}}
             <a href="/{{.}}">{{.}}</a>
+            <br>
         {{end}}
     </div>
-    <h3>{{.displayName}}
-        <button>查看</button>
-    </h3>
+    <h3>{{.displayName}} 的选课情况👇 子标签👆</h3>
     <div>已选: 「 {{.curCredit}} 」 学分
         {{range .selectedCourses}}
             <ul>{{.}}</ul>

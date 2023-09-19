@@ -7,10 +7,11 @@ import (
 )
 
 var Plan *Node
+var MaxDepth int
 var MyCourses []PersonalCourse
 
 func init() {
-	Plan = ReadTrainingPlan(conf.Config.DatafilePath)
+	Plan, MaxDepth = ReadTrainingPlan(conf.Config.DatafilePath)
 	MyCourses = getPersonalCourses(conf.Config.Cookie)
 }
 
@@ -32,6 +33,19 @@ type DisplayTable struct {
 	DemandTotalScore  string
 	CurCredit         string
 	AnotherCredit     string
+}
+
+// GetSubNode 根据名字获取该节点的子节点
+func GetSubNode(node Node, displayName ...string) *Node {
+	if len(displayName) == 0 {
+		return &node
+	}
+	for _, n := range node.ChildrenNode {
+		if n.DisplayName == displayName[0] {
+			return GetSubNode(n, displayName[1:]...)
+		}
+	}
+	return nil
 }
 
 // GetValidCourse 获取该节点下所有已修课程

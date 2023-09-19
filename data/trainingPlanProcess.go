@@ -2,6 +2,7 @@ package data
 
 import (
 	"bufio"
+	"math"
 	"os"
 	"regexp"
 	"strconv"
@@ -46,11 +47,12 @@ func trimAll(str string) string {
 
 }
 
-func ReadTrainingPlan(filePath string) *Node {
+func ReadTrainingPlan(filePath string) (*Node, int) {
+	maxDepth := 0
 	data, err := os.Open(filePath)
 	if err != nil {
 		utils.Error("打开培养方案文件出错: ", err)
-		return nil
+		return nil, 0
 	}
 	defer func(data *os.File) {
 		err := data.Close()
@@ -74,6 +76,7 @@ func ReadTrainingPlan(filePath string) *Node {
 			continue
 		}
 		depth, ok := countNodeDepth(line)
+		maxDepth = int(math.Max(float64(maxDepth), float64(depth)))
 		// 叶子
 		if ok {
 			courseInfo := strings.Split(trimAll(line), " ")
@@ -174,6 +177,6 @@ func ReadTrainingPlan(filePath string) *Node {
 		utils.Error("Error reading from file:", err)
 	}
 
-	return &dataNode
+	return &dataNode, maxDepth
 
 }
