@@ -20,13 +20,16 @@ func SetupRouter() *gin.Engine {
 		})
 	})
 
+	major := data.Plan.DisplayName
+
 	// 定义根节点为专业课
 	rootNode := data.Plan.ChildrenNode[2]
 	//maxDepth := data.MaxDepth - 1
 
 	info := ""
 	if data.MyCourses.IsOutOfDate {
-		info = "您的cookie已过期，当前数据为上次 (" + data.MyCourses.Date.Format("2006/01/02--15:01") + ") 的缓存，如您选课情况有变，请更新cookie"
+		info = "您的cookie已过期，当前数据为上次 (" +
+			data.MyCourses.Date.Format("2006/01/02--15:01") + ") 的缓存，如您选课情况有变，请更新cookie"
 	}
 
 	// 第一级路由
@@ -46,6 +49,7 @@ func SetupRouter() *gin.Engine {
 
 		context.HTML(http.StatusOK, "display.gohtml", gin.H{
 			"lastPath":          "/",
+			"major":             major,
 			"info":              info,
 			"displayNames":      childDisplayNames, // 下属节点
 			"displayName":       rootDisplayTable.DisplayName,
