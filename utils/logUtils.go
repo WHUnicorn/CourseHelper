@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
@@ -26,11 +27,11 @@ var isUnix = true
 
 func init() {
 	isUnix, _ = strconv.ParseBool(conf.Config.IsUnix)
-	//switch runtime.GOOS {
-	//case "windows":
-	//	isUnix = false
-	//default:
-	//}
+	switch runtime.GOOS {
+	case "windows":
+		isUnix = false
+	default:
+	}
 
 	myLogger = log.New(os.Stdout, "[Default]", log.Lshortfile|log.Ldate|log.Ltime)
 	logLevel = conf.Config.LogLevel
