@@ -1,5 +1,3 @@
-//go:build !linux
-
 package logger
 
 func colorPrint(color string, msg string, v ...any) {
