@@ -1,10 +1,10 @@
 package web
 
-import "testCourse/conf"
+import "testCourse/setup"
 
 func Test() {
 	router := SetupRouter()
-	err := router.Run("127.0.0.1:" + conf.Config.Port)
+	err := router.Run("127.0.0.1:" + setup.Config.Port)
 	if err != nil {
 		return
 	}

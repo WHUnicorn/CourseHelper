@@ -1,4 +1,4 @@
-package conf
+package setup
 
 import (
 	"encoding/json"

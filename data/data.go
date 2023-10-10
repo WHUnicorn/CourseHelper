@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"testCourse/conf"
 	"testCourse/logger"
+	"testCourse/setup"
 	"time"
 )
 
@@ -14,8 +14,8 @@ var MaxDepth int
 var MyCourses PersonalCourses
 
 func init() {
-	Plan, MaxDepth = ReadTrainingPlan(conf.Config.DatafilePath)
-	MyCourses.Courses = getPersonalCourses(conf.Config.Cookie)
+	Plan, MaxDepth = ReadTrainingPlan(setup.Config.DatafilePath)
+	MyCourses.Courses = getPersonalCourses(setup.Config.Cookie)
 	filePath := "./resources/myCourse.json"
 	if MyCourses.Courses != nil {
 		MyCourses.Date = time.Now()

@@ -2,11 +2,11 @@ package logger
 
 import (
 	"fmt"
-	"github.com/WHUCSStudy/StudyBot/setup"
 	"log"
 	"os"
 	"runtime"
 	"strconv"
+	"testCourse/setup"
 )
 
 const (
