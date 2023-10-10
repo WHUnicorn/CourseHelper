@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"testCourse/utils"
+	"testCourse/logger"
 	"time"
 )
 
@@ -108,7 +108,7 @@ func getPersonalCourses(cookie string) (res []PersonalCourse) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		utils.Error(err)
+		logger.Error(err)
 		return nil
 	}
 	defer func(Body io.ReadCloser) {
@@ -120,8 +120,8 @@ func getPersonalCourses(cookie string) (res []PersonalCourse) {
 	var reply resultSet
 	err = json.Unmarshal(responseBody, &reply)
 	if err != nil {
-		utils.Warning(err)
-		utils.Warning("cookie 已失效，准备尝试读取本地缓存...")
+		logger.Warning(err)
+		logger.Warning("cookie 已失效，准备尝试读取本地缓存...")
 		return nil
 	}
 

@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"testCourse/utils"
+	"testCourse/logger"
 )
 
 type Node struct {
@@ -51,13 +51,13 @@ func ReadTrainingPlan(filePath string) (*Node, int) {
 	maxDepth := 0
 	data, err := os.Open(filePath)
 	if err != nil {
-		utils.Error("打开培养方案文件出错: ", err)
+		logger.Error("打开培养方案文件出错: ", err)
 		return nil, 0
 	}
 	defer func(data *os.File) {
 		err := data.Close()
 		if err != nil {
-			utils.Error(err)
+			logger.Error(err)
 		}
 	}(data)
 
@@ -81,7 +81,7 @@ func ReadTrainingPlan(filePath string) (*Node, int) {
 		if ok {
 			courseInfo := strings.Split(trimAll(line), " ")
 			if len(courseInfo) == 0 {
-				utils.Error("未知错误！")
+				logger.Error("未知错误！")
 			}
 
 			var newCourse Course
@@ -110,7 +110,7 @@ func ReadTrainingPlan(filePath string) (*Node, int) {
 				for i := len(courseInfo) - 1; i >= 0; i-- {
 					isMatch, err := regexp.MatchString("[0-9?]+(-[0-9?])?", courseInfo[i])
 					if err != nil {
-						utils.Error(err)
+						logger.Error(err)
 					}
 					if isMatch {
 						newCourse.Semester = courseInfo[i]
@@ -140,7 +140,7 @@ func ReadTrainingPlan(filePath string) (*Node, int) {
 					score = -1
 				}
 			default:
-				utils.Error("解析出错！")
+				logger.Error("解析出错！")
 			}
 			if depth != 0 {
 				newNode := Node{
@@ -156,7 +156,7 @@ func ReadTrainingPlan(filePath string) (*Node, int) {
 					if len(tempNode.ChildrenNode) > 0 {
 						tempNode = &tempNode.ChildrenNode[len(tempNode.ChildrenNode)-1]
 					} else {
-						utils.Error("子节点断言出错了！")
+						logger.Error("子节点断言出错了！")
 					}
 				}
 				tempNode.ChildrenNode = append(tempNode.ChildrenNode, newNode)
@@ -174,7 +174,7 @@ func ReadTrainingPlan(filePath string) (*Node, int) {
 
 	// scanner 异常结束
 	if err := scanner.Err(); err != nil {
-		utils.Error("Error reading from file:", err)
+		logger.Error("Error reading from file:", err)
 	}
 
 	return &dataNode, maxDepth

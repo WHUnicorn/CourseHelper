@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"testCourse/conf"
-	"testCourse/utils"
+	"testCourse/logger"
 	"time"
 )
 
@@ -28,14 +28,14 @@ func init() {
 	// cookie 失效，未获取数据，尝试读文件
 	bytes, err := os.ReadFile(filePath)
 	if err != nil {
-		utils.Error("cookie 已失效且本地无缓存，请重新获取 cookie...")
+		logger.Error("cookie 已失效且本地无缓存，请重新获取 cookie...")
 		return
 	}
 
 	// 读文件并解析
 	err = json.Unmarshal(bytes, &MyCourses)
 	if err != nil {
-		utils.Error("解析本地文件失败，请删除该文件！")
+		logger.Error("解析本地文件失败，请删除该文件！")
 		return
 	}
 	MyCourses.IsOutOfDate = true // 标记为过时
@@ -111,7 +111,7 @@ func GetNodeCourse(node Node, courses *[]Course) {
 		return
 	}
 	if node.ChildrenNode == nil || len(node.ChildrenNode) == 0 {
-		utils.Debug("该节点无子节点！")
+		logger.Debug("该节点无子节点！")
 		return
 	}
 	for _, n := range node.ChildrenNode {
@@ -123,7 +123,7 @@ func writeToFile(obj interface{}, filePath string) {
 	myCoursesJson, _ := json.Marshal(obj)
 	err := os.WriteFile(filePath, myCoursesJson, 0666)
 	if err != nil {
-		utils.Error(err)
+		logger.Error(err)
 		return
 	}
 }
