@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"testCourse/logger"
+	"testCourse/setup"
 )
 
 type Node struct {
@@ -48,6 +49,7 @@ func trimAll(str string) string {
 }
 
 func ReadTrainingPlan(filePath string) (*Node, int) {
+	filePath = setup.GetAbsolutePath(filePath)
 	maxDepth := 0
 	data, err := os.Open(filePath)
 	if err != nil {
