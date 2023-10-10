@@ -1,5 +1,7 @@
 package logger
 
+import "fmt"
+
 func colorPrint(color string, msg string, v ...any) {
 	myLogger.SetPrefix(color + "[" + msg + "]" + colorReset)
 	overridePrintln(myLogger, logMap[logLevel] >= logMap[msg], color+fmt.Sprint(v...)+colorReset)
