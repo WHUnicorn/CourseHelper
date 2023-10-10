@@ -51,7 +51,7 @@ func overridePrintln(l *log.Logger, isDisplay bool, v ...any) {
 	if !isDisplay {
 		return
 	}
-	err := l.Output(4, fmt.Sprintln(v...))
+	err := l.Output(5, fmt.Sprintln(v...))
 	if err != nil {
 		return
 	}

@@ -2,9 +2,13 @@ package setup
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/spf13/viper"
 	"log"
+	"os"
+	"path"
 	"reflect"
+	"runtime"
 )
 
 var Config = struct {
@@ -47,9 +51,11 @@ func setConf(value reflect.Value, lastFields ...string) {
 }
 
 func init() {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./")
+	//viper.SetConfigName("config")
+	//viper.SetConfigType("yaml")
+	//viper.AddConfigPath("./")
+
+	viper.SetConfigFile(getConfigPath("config.yaml"))
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal("请您添加配置文件（将 config.yaml.demo 重命名为 config.yaml 并补充 cookie 字段）")
 		return // 自动退出
@@ -61,4 +67,19 @@ func init() {
 		configStr, _ := json.Marshal(Config)
 		log.Fatal("请配置cookie! 当前配置: ", string(configStr))
 	}
+}
+
+func getConfigPath(name string) (configPath string) {
+	_, filename, _, ok := runtime.Caller(1)
+	if ok {
+		// 从源码获取，尝试查找源码根路径的 confName 文件
+		configPath = fmt.Sprintf("%s/../%s", path.Dir(filename), name)
+	}
+	_, err := os.Stat(configPath)
+	if os.IsNotExist(err) {
+		// 未找到则直接返回当前目录下的文件
+		configPath = "./" + name
+	}
+
+	return
 }
