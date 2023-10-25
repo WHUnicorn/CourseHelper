@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"testCourse/data"
+	"testCourse/logger"
 )
 
 func SetupRouter() *gin.Engine {
@@ -31,6 +32,26 @@ func SetupRouter() *gin.Engine {
 		info = "您的cookie已过期，当前数据为上次 (" +
 			data.MyCourses.Date.Format("2006/01/02--15:01") + ") 的缓存，如您选课情况有变，请更新cookie"
 	}
+
+	router.GET("/api/courses", func(context *gin.Context) {
+		courseTypes := make([]string, 0)
+		err := context.BindJSON(&courseTypes)
+		if err != nil {
+			context.JSON(400, gin.H{
+				"err_no":  400,
+				"message": "不合法的课程名",
+			})
+			return
+		}
+		logger.Info(courseTypes)
+
+		tempNode := data.GetSubNode(*data.Plan, courseTypes...)
+		courses := tempNode.Courses
+
+		context.JSON(http.StatusOK, gin.H{
+			"courses": courses,
+		})
+	})
 
 	// 第一级路由
 	router.GET("/", func(context *gin.Context) {
