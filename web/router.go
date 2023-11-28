@@ -60,7 +60,7 @@ func SetupRouter() *gin.Engine {
 			}
 			logger.Info(courseTypes)
 
-			tempNode := data.GetSubNode(*data.Plan, courseTypes...)
+			tempNode := data.GetSubNodeByDisplayName(*data.Plan, courseTypes...)
 			if tempNode == nil {
 				context.JSON(400, gin.H{
 					"err_no":  400,
@@ -110,7 +110,7 @@ func SetupRouter() *gin.Engine {
 	}
 	router.GET("/:table1", func(context *gin.Context) {
 		table1 := context.Param("table1")
-		curNode := data.GetSubNode(rootNode, table1)
+		curNode := data.GetSubNodeByDisplayName(rootNode, table1)
 		if curNode == nil {
 			context.String(404, "NotFound!")
 			return
@@ -142,7 +142,7 @@ func SetupRouter() *gin.Engine {
 		table1 := context.Param("table1")
 		table2 := context.Param("table2")
 
-		curNode := data.GetSubNode(*data.GetSubNode(rootNode, table1), table2)
+		curNode := data.GetSubNodeByDisplayName(*data.GetSubNodeByDisplayName(rootNode, table1), table2)
 		if curNode == nil {
 			context.String(404, "NotFound!")
 			return
@@ -175,8 +175,8 @@ func SetupRouter() *gin.Engine {
 		table2 := context.Param("table2")
 		table3 := context.Param("table3")
 
-		curNode := data.GetSubNode(*data.GetSubNode(
-			*data.GetSubNode(rootNode, table1), table2),
+		curNode := data.GetSubNodeByDisplayName(*data.GetSubNodeByDisplayName(
+			*data.GetSubNodeByDisplayName(rootNode, table1), table2),
 			table3)
 		if curNode == nil {
 			context.String(404, "NotFound!")

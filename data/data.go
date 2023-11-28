@@ -62,36 +62,38 @@ type DisplayTable struct {
 	AnotherCredit     string   `json:"anotherCredit"`
 }
 type Tree struct {
-	Label    string `json:"label"`
-	Children []Tree `json:"children"`
+	Pre      []string `json:"pre"`
+	Label    string   `json:"label"`
+	Children []Tree   `json:"children"`
 }
 
-func getSubTree(node Node) []Tree {
+func getSubTree(node Node, pre ...string) []Tree {
 	if node.ChildrenNode == nil {
 		return nil
 	}
 	tree := make([]Tree, len(node.ChildrenNode))
 	for i, n := range node.ChildrenNode {
+		tree[i].Pre = pre
 		tree[i].Label = n.DisplayName
-		tree[i].Children = getSubTree(n)
+		tree[i].Children = getSubTree(n, append(pre, n.DisplayName)...)
 	}
 	return tree
 }
 func GetDisplayNameTree(node Node) *Tree {
 	if node.ChildrenNode == nil {
-		return &Tree{node.DisplayName, nil}
+		return &Tree{nil, node.DisplayName, nil}
 	}
-	return &Tree{node.DisplayName, getSubTree(node)}
+	return &Tree{nil, node.DisplayName, getSubTree(node, node.DisplayName)}
 }
 
-// GetSubNode 根据名字获取该节点的子节点
-func GetSubNode(node Node, displayName ...string) *Node {
+// GetSubNodeByDisplayName 根据名字获取该节点的子节点
+func GetSubNodeByDisplayName(node Node, displayName ...string) *Node {
 	if len(displayName) == 0 {
 		return &node
 	}
 	for _, n := range node.ChildrenNode {
 		if n.DisplayName == displayName[0] {
-			return GetSubNode(n, displayName[1:]...)
+			return GetSubNodeByDisplayName(n, displayName[1:]...)
 		}
 	}
 	logger.WarningF("课程名 %v 不存在！", displayName[0])
