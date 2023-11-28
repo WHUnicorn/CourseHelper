@@ -42,6 +42,12 @@ func SetupRouter() *gin.Engine {
 	// 添加api组
 	v1 := router.Group("/api/v1")
 	{
+		v1.GET("/display-tree", func(context *gin.Context) {
+			context.JSON(http.StatusOK, gin.H{
+				"tree": data.GetDisplayNameTree(rootNode),
+			})
+			return
+		})
 		v1.POST("/courses", func(context *gin.Context) {
 			courseTypes := make([]string, 0)
 			err := context.BindJSON(&courseTypes)

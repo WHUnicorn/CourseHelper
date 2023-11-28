@@ -61,6 +61,28 @@ type DisplayTable struct {
 	CurCredit         string   `json:"curCredit"`
 	AnotherCredit     string   `json:"anotherCredit"`
 }
+type Tree struct {
+	Label    string `json:"label"`
+	Children []Tree `json:"children"`
+}
+
+func getSubTree(node Node) []Tree {
+	if node.ChildrenNode == nil {
+		return nil
+	}
+	tree := make([]Tree, len(node.ChildrenNode))
+	for i, n := range node.ChildrenNode {
+		tree[i].Label = n.DisplayName
+		tree[i].Children = getSubTree(n)
+	}
+	return tree
+}
+func GetDisplayNameTree(node Node) *Tree {
+	if node.ChildrenNode == nil {
+		return &Tree{node.DisplayName, nil}
+	}
+	return &Tree{node.DisplayName, getSubTree(node)}
+}
 
 // GetSubNode 根据名字获取该节点的子节点
 func GetSubNode(node Node, displayName ...string) *Node {
