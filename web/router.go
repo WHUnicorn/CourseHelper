@@ -1,6 +1,7 @@
 package web
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -10,6 +11,11 @@ import (
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"*"} // 允许所有域进行跨域请求，也可以设置特定域名
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	router.Use(cors.New(config))
+
 	router.LoadHTMLGlob("resources/template/*")
 	router.Static("/resources/static", "./resources/static")
 	router.GET("/aa", func(c *gin.Context) {
@@ -33,26 +39,36 @@ func SetupRouter() *gin.Engine {
 			data.MyCourses.Date.Format("2006/01/02--15:01") + ") 的缓存，如您选课情况有变，请更新cookie"
 	}
 
-	router.GET("/api/courses", func(context *gin.Context) {
-		courseTypes := make([]string, 0)
-		err := context.BindJSON(&courseTypes)
-		if err != nil {
-			context.JSON(400, gin.H{
-				"err_no":  400,
-				"message": "不合法的课程名",
+	// 添加api组
+	v1 := router.Group("/api/v1")
+	{
+		v1.POST("/courses", func(context *gin.Context) {
+			courseTypes := make([]string, 0)
+			err := context.BindJSON(&courseTypes)
+			if err != nil {
+				context.JSON(400, gin.H{
+					"err_no":  400,
+					"message": "不合法的课程名",
+				})
+				return
+			}
+			logger.Info(courseTypes)
+
+			tempNode := data.GetSubNode(*data.Plan, courseTypes...)
+			if tempNode == nil {
+				context.JSON(400, gin.H{
+					"err_no":  400,
+					"message": "课程名不存在！",
+				})
+				return
+			}
+			courses := data.GetValidCourse(*tempNode)
+
+			context.JSON(http.StatusOK, gin.H{
+				"courses": courses,
 			})
-			return
-		}
-		logger.Info(courseTypes)
-
-		tempNode := data.GetSubNode(*data.Plan, courseTypes...)
-		courses := tempNode.Courses
-
-		context.JSON(http.StatusOK, gin.H{
-			"courses": courses,
 		})
-	})
-
+	}
 	// 第一级路由
 	router.GET("/", func(context *gin.Context) {
 		rootDisplayTable := data.GetValidCourse(rootNode)

@@ -54,12 +54,12 @@ func validLearnt(arr *[]PersonalCourse, elem Course) bool {
 }
 
 type DisplayTable struct {
-	DisplayName       string
-	SelectedCourses   []string
-	UnselectedCourses []string
-	DemandTotalScore  string
-	CurCredit         string
-	AnotherCredit     string
+	DisplayName       string   `json:"displayName"`
+	SelectedCourses   []string `json:"selectedCourses"`
+	UnselectedCourses []string `json:"unselectedCourses"`
+	DemandTotalScore  string   `json:"demandTotalScore"`
+	CurCredit         string   `json:"curCredit"`
+	AnotherCredit     string   `json:"anotherCredit"`
 }
 
 // GetSubNode 根据名字获取该节点的子节点
@@ -72,6 +72,7 @@ func GetSubNode(node Node, displayName ...string) *Node {
 			return GetSubNode(n, displayName[1:]...)
 		}
 	}
+	logger.WarningF("课程名 %v 不存在！", displayName[0])
 	// 未匹配到
 	return nil
 }
