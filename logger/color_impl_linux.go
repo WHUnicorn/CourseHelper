@@ -1,13 +1,33 @@
 package logger
 
-import "fmt"
+import (
+	"strings"
+)
 
-func colorPrint(color string, msg string, v ...any) {
-	myLogger.SetPrefix(color + "[" + msg + "]" + colorReset)
-	overridePrintln(myLogger, logMap[logLevel] >= logMap[msg], color+fmt.Sprint(v...)+colorReset)
-	// 上一行参数传v表示整体当成数组传入，参数传v... 表示多个参数分别传入
+const (
+	colorRed    = "\033[31m"
+	colorGreen  = "\033[32m"
+	colorYellow = "\033[33m"
+	colorPurple = "\033[35m"
+
+	colorReset = "\033[0m"
+)
+
+func beforeOut(levelStr string, outStr *string) {
+	switch strings.ToLower(levelStr) {
+	case "error":
+		*outStr = colorRed + *outStr + colorReset
+	case "warning":
+		*outStr = colorYellow + *outStr + colorReset
+	case "info":
+		*outStr = colorGreen + *outStr + colorReset
+	case "debug":
+		*outStr = colorPurple + *outStr + colorReset
+	default:
+		*outStr = colorPurple + *outStr + colorReset
+	}
 }
-func colorPrintf(format string, color string, msg string, v ...any) {
-	myLogger.SetPrefix(color + "[" + msg + "]" + colorReset)
-	overridePrintln(myLogger, logMap[logLevel] >= logMap[msg], color+fmt.Sprintf(format, v...)+colorReset)
+
+func afterOut() {
+	// do nothing
 }

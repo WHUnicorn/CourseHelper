@@ -1,27 +1,14 @@
 package logger
 
 import (
-	"fmt"
 	"strings"
 	"syscall"
 )
 
-type colorLoggerImpl int
-
-func colorPrint(color string, msg string, v ...any) {
-	winColorPrintln(msg, fmt.Sprint(v...))
-
-}
-func colorPrintf(format string, color string, msg string, v ...any) {
-	winColorPrintln(msg, fmt.Sprintf(format, v...))
-}
-
-// windows 操作系统下调用系统api实现cmd着色
-func winColorPrintln(msg string, v ...any) {
-
+func beforeOut(levelStr string, _ *string) {
 	kernel32 := syscall.NewLazyDLL("kernel32.dll")
 	proc := kernel32.NewProc("SetConsoleTextAttribute")
-	switch strings.ToLower(msg) {
+	switch strings.ToLower(levelStr) {
 	case "error":
 		_, _, _ = proc.Call(uintptr(syscall.Stdout), uintptr(4))
 	case "warning":
@@ -31,10 +18,12 @@ func winColorPrintln(msg string, v ...any) {
 	case "debug":
 		_, _, _ = proc.Call(uintptr(syscall.Stdout), uintptr(5))
 	default:
+		_, _, _ = proc.Call(uintptr(syscall.Stdout), uintptr(5))
 	}
+}
 
-	myLogger.SetPrefix("[" + msg + "]")
-	overridePrintln(myLogger, logMap[logLevel] >= logMap[msg], v...)
-
+func afterOut() {
+	kernel32 := syscall.NewLazyDLL("kernel32.dll")
+	proc := kernel32.NewProc("SetConsoleTextAttribute")
 	_, _, _ = proc.Call(uintptr(syscall.Stdout), uintptr(7))
 }
